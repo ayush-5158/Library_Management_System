@@ -39,7 +39,7 @@ class StudentUpdate(BaseModel):
 class IssuedBook(BaseModel):
     book_id : int
     student_id :int
-    issued_date : str
+    issue_date : str
     return_date : Optional[str] = None
 
 
@@ -47,15 +47,18 @@ class IssuedBookResponse(BaseModel):
     issue_id : int
     book_id : int
     student_id : int
-    issued_date : str
+    issue_date : str
 
     class Config:
         from_attributes = True
 
 
 class IssuedBookUpdate(BaseModel):
-    issued_id : int
-    return_date:Optional[str] = None
+    issue_id : int
+    return_date: str
+
+    class Config:
+        from_attributes = True
 
 class Complaint(BaseModel):
     student_id :Optional[int] = None

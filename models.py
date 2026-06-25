@@ -25,7 +25,7 @@ class Issued_book(Base):
 
     issue_id = Column(Integer, primary_key=True, index=True)
     book_id = Column(Integer)
-    issued_date = Column(VARCHAR(255))
+    issue_date = Column(VARCHAR(255))
     return_date = Column(VARCHAR(255))
     student_id = Column(Integer)
 

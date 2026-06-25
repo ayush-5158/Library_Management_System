@@ -103,7 +103,7 @@ def update_student(student_id:int,updates:schemas.StudentUpdate,db:Session=Depen
     return student
 
 
-@router.delete("/delete/{student_id}")
+@router.delete("/delete/{student_id}",response_model=schemas.StudentResponse)
 def delete_student(student_id:int,db:Session=Depends(get_db)):
     student = db.query(models.Student).filter(
         models.Student.student_id == student_id
@@ -115,8 +115,5 @@ def delete_student(student_id:int,db:Session=Depends(get_db)):
     db.delete(student)
     db.commit()
     
-    return{
-        "message":"Deleted Succesfully",
-        "student":student
-    }
+    return student
 

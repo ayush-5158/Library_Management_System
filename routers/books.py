@@ -44,7 +44,7 @@ def show_books(db:Session=Depends(get_db)):
     return books
 
 
-@router.get("/books/available")
+@router.get("/available")
 def show_filter_book(db:Session=Depends(get_db)):
     books=db.query(models.Books).filter(
         models.Books.is_available=="Yes"
