@@ -18,6 +18,17 @@ class Student(BaseModel):
     grade : str
     email : str
     phone_number:str
+    password:str
+
+class StudentResponse(BaseModel):
+    student_id : int
+    name: str
+    grade :str
+    email :str
+    phone_number:str
+
+    class Config:
+        from_attributes = True
 
 class StudentUpdate(BaseModel):
     name : Optional[str] = None
@@ -27,20 +38,32 @@ class StudentUpdate(BaseModel):
 
 class IssuedBook(BaseModel):
     book_id : int
-    name : str
-    issued_date : str
-    return_date:str
     student_id :int
+    issued_date : str
+    return_date : Optional[str] = None
+
+
+class IssuedBookResponse(BaseModel):
+    issue_id : int
+    book_id : int
+    student_id : int
+    issued_date : str
+
+    class Config:
+        from_attributes = True
+
 
 class IssuedBookUpdate(BaseModel):
-    book_id : Optional[int] = None
-    name : Optional[str] = None
-    issued_date : Optional[str] = None
+    issued_id : int
     return_date:Optional[str] = None
-    student_id :Optional[int] = None
 
 class Complaint(BaseModel):
     student_id :Optional[int] = None
     complaint : Optional[str] = None
     complaint_date : Optional[str] = None
-    resolve_date : Optional[str] = None
+    resolved_date : Optional[str] = None
+
+
+class ComplaintUpdate(BaseModel):
+    complaint : Optional[str] = None
+    resolved_date : Optional[str] = None

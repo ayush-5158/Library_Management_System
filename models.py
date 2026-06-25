@@ -25,7 +25,6 @@ class Issued_book(Base):
 
     issue_id = Column(Integer, primary_key=True, index=True)
     book_id = Column(Integer)
-    name = Column(VARCHAR(255))
     issued_date = Column(VARCHAR(255))
     return_date = Column(VARCHAR(255))
     student_id = Column(Integer)
@@ -38,6 +37,3 @@ class Complaint(Base):
     complaint = Column(VARCHAR(1000))
     complaint_date = Column(VARCHAR(255))
     resolved_date = Column(VARCHAR(255))
-
-
-
