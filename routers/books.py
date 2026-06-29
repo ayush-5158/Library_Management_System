@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-
+from auth.jwt_handler import require_admin
 import models
 import schemas
 from database import get_db
@@ -11,14 +11,11 @@ router = APIRouter(
 )
 
 @router.post("/add_book")
-def add_book(books:list[schemas.BookCreate], db:Session = Depends(get_db)):#since you are sending list of books so we need to mention list[schemas.Books]
-
+def add_book(books:list[schemas.BookCreate], db:Session = Depends(get_db),admin:models.Student = Depends(require_admin)):#since you are sending list of books so we need to mention list[schemas.Books]
     new_books=[]
     for book in books:
-        existing_book = db.query(models.Book).filter(
-            models.Book.title == book.title
-        ).first()
-
+        existing_book = db.query(models.Book).filter(models.Book.title == book.title).first()
+        
         if existing_book:
             continue
 

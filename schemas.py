@@ -33,6 +33,10 @@ class UserUpdate(BaseModel):
     email : Optional[str] = None
     phone_number:Optional[str] = None
 
+class IssuedBookRequest(BaseModel):
+    book_id : int
+    issue_date : date
+
 class IssuedBook(BaseModel):
     book_id : int
     student_id :int
@@ -56,7 +60,14 @@ class IssuedBookUpdate(BaseModel):
 
     class Config:
         from_attributes = True
-    
+
+class BookResponse(BaseModel):
+    issue_id : int
+    book_id :int
+    title : str
+    issue_date : date
+    return_date : Optional[date]=None
+
 class LoginRequest(BaseModel):
     email : str
     password : str

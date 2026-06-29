@@ -40,3 +40,9 @@ def get_current_user(token:str=Depends(oauth2_scheme),db:Session = Depends(get_d
         raise HTTPException(status_code=401,detail='Could not validate credentials.')
     return current_user
     
+def require_admin(current_user : models.Student = Depends(get_current_user)):
+    if current_user.role == 'admin':
+        return current_user
+    else:
+        raise HTTPException(status_code=403,detail="You are not authorized to perform this action.")
+    
