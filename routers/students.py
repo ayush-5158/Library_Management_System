@@ -1,7 +1,7 @@
 from fastapi import APIRouter,HTTPException,Depends,status
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
-
+from auth.hashing import hash_password
 import models,schemas
 from database import get_db
 
@@ -12,7 +12,7 @@ router = APIRouter(
 
 
 @router.post("/add",response_model = schemas.StudentResponse,status_code=status.HTTP_201_CREATED)#added status code here since if post execute succesfully then it will create the data, so the http should respond 201 created instead of simple 200 ok
-def add_students(student_data:schemas.Student,db:Session=Depends(get_db)):
+def add_students(student_data:schemas.User,db:Session=Depends(get_db)):
     
     existing_student = db.query(models.Student).filter(or_(models.Student.email == student_data.email, models.Student.phone_number == student_data.phone_number)).first()
 
@@ -22,13 +22,13 @@ def add_students(student_data:schemas.Student,db:Session=Depends(get_db)):
         
         if existing_student.phone_number == student_data.phone_number:
             raise HTTPException(status_code=409,detail="Phone number already in use.")
-    
+    hashed_password = hash_password(student_data.password)
     new_student = models.Student(
         name = student_data.name,
         email = student_data.email,
         grade = student_data.grade,
         phone_number = student_data.phone_number,
-        password = student_data.password
+        password = hashed_password
     )
 
     db.add(new_student)
@@ -38,7 +38,7 @@ def add_students(student_data:schemas.Student,db:Session=Depends(get_db)):
     return new_student
 
 @router.post("/add-bulk",response_model = list[schemas.StudentResponse],status_code=status.HTTP_201_CREATED)
-def add_student_bulk(students_data:list[schemas.Student],db:Session=Depends(get_db)):
+def add_student_bulk(students_data:list[schemas.User],db:Session=Depends(get_db)):
 
     new_students=[]
 
@@ -47,13 +47,14 @@ def add_student_bulk(students_data:list[schemas.Student],db:Session=Depends(get_
 
         if existing_student:
             continue
-
+        
+        hashed_password = hash_password(student.password)
         new_student = models.Student(
             name = student.name,
             email = student.email,
             grade = student.grade,
             phone_number = student.phone_number,
-            password = student.password
+            password = hashed_password
         )
 
         new_students.append(new_student)

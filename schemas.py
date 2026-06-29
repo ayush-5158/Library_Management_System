@@ -13,7 +13,7 @@ class BookUpdate(BaseModel):
     is_available: Optional[str] = None
     assigned_to : Optional[str] = None
 
-class Student(BaseModel):
+class User(BaseModel):
     name : str
     grade : str
     email : str
@@ -70,3 +70,8 @@ class Complaint(BaseModel):
 class ComplaintUpdate(BaseModel):
     complaint : Optional[str] = None
     resolved_date : Optional[str] = None
+    
+class LoginRequest(BaseModel):
+    email : str
+    password : str
+
