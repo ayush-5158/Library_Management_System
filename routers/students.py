@@ -6,17 +6,20 @@ import models,schemas
 from database import get_db
 
 router = APIRouter(
-    prefix="/students",# @router.get('/') -> @router.get(/students)
-    tags=["Students"]
+    prefix="/users",# @router.get('/') -> @router.get(/students)
+    tags=["Users"]
 )
 
 
-@router.post("/add",response_model = schemas.StudentResponse,status_code=status.HTTP_201_CREATED)#added status code here since if post execute succesfully then it will create the data, so the http should respond 201 created instead of simple 200 ok
+@router.post("/add",response_model = schemas.UserResponse,status_code=status.HTTP_201_CREATED)#added status code here since if post execute succesfully then it will create the data, so the http should respond 201 created instead of simple 200 ok
 def add_students(student_data:schemas.User,db:Session=Depends(get_db)):
     
     existing_student = db.query(models.Student).filter(or_(models.Student.email == student_data.email, models.Student.phone_number == student_data.phone_number)).first()
 
     if existing_student:
+        if existing_student.email == student_data.email and existing_student.phone_number == student_data.phone_number :
+            raise HTTPException(status_code=409,detail="Email and Phone number already in use.")
+
         if existing_student.email == student_data.email:
             raise HTTPException(status_code=409,detail="Email already in use.")
         
@@ -25,8 +28,8 @@ def add_students(student_data:schemas.User,db:Session=Depends(get_db)):
     hashed_password = hash_password(student_data.password)
     new_student = models.Student(
         name = student_data.name,
+        role = student_data.role,
         email = student_data.email,
-        grade = student_data.grade,
         phone_number = student_data.phone_number,
         password = hashed_password
     )
@@ -37,7 +40,7 @@ def add_students(student_data:schemas.User,db:Session=Depends(get_db)):
 
     return new_student
 
-@router.post("/add-bulk",response_model = list[schemas.StudentResponse],status_code=status.HTTP_201_CREATED)
+@router.post("/add-bulk",response_model = list[schemas.UserResponse],status_code=status.HTTP_201_CREATED)
 def add_student_bulk(students_data:list[schemas.User],db:Session=Depends(get_db)):
 
     new_students=[]
@@ -51,8 +54,8 @@ def add_student_bulk(students_data:list[schemas.User],db:Session=Depends(get_db)
         hashed_password = hash_password(student.password)
         new_student = models.Student(
             name = student.name,
+            role = student.role,
             email = student.email,
-            grade = student.grade,
             phone_number = student.phone_number,
             password = hashed_password
         )
@@ -67,12 +70,12 @@ def add_student_bulk(students_data:list[schemas.User],db:Session=Depends(get_db)
 
     return new_students
 
-@router.get("/all",response_model=list[schemas.StudentResponse],status_code=status.HTTP_200_OK) #added list[] as response will give list of students
+@router.get("/all",response_model=list[schemas.UserResponse],status_code=status.HTTP_200_OK) #added list[] as response will give list of students
 def all_students(db:Session=Depends(get_db)):
     students = db.query(models.Student).all()
     return students
 
-@router.get("/{student_id}",response_model=schemas.StudentResponse,status_code=200)
+@router.get("/{student_id}",response_model=schemas.UserResponse,status_code=200)
 def get_student(student_id:int,db:Session=Depends(get_db)):
     student = db.query(models.Student).filter(
         models.Student.student_id == student_id
@@ -83,8 +86,8 @@ def get_student(student_id:int,db:Session=Depends(get_db)):
     
     return student
 
-@router.patch("/update/{student_id}",response_model=schemas.StudentResponse)
-def update_student(student_id:int,updates:schemas.StudentUpdate,db:Session=Depends(get_db)):
+@router.patch("/update/{student_id}",response_model=schemas.UserResponse)
+def update_student(student_id:int,updates:schemas.UserUpdate,db:Session=Depends(get_db)):
     student = db.query(models.Student).filter(
         models.Student.student_id == student_id
     ).first()
@@ -104,7 +107,7 @@ def update_student(student_id:int,updates:schemas.StudentUpdate,db:Session=Depen
     return student
 
 
-@router.delete("/delete/{student_id}",response_model=schemas.StudentResponse)
+@router.delete("/delete/{student_id}",response_model=schemas.UserResponse)
 def delete_student(student_id:int,db:Session=Depends(get_db)):
     student = db.query(models.Student).filter(
         models.Student.student_id == student_id

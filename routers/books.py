@@ -11,22 +11,20 @@ router = APIRouter(
 )
 
 @router.post("/add_book")
-def add_book(books:list[schemas.Books], db:Session = Depends(get_db)):#since you are sending list of books so we need to mention list[schemas.Books]
+def add_book(books:list[schemas.BookCreate], db:Session = Depends(get_db)):#since you are sending list of books so we need to mention list[schemas.Books]
 
     new_books=[]
     for book in books:
-        existing_book = db.query(models.Books).filter(
-            models.Books.title == book.title
+        existing_book = db.query(models.Book).filter(
+            models.Book.title == book.title
         ).first()
 
         if existing_book:
             continue
 
-        new_book = models.Books(
+        new_book = models.Book(
             title=book.title,
             author=book.author,
-            is_available=book.is_available,
-            assigned_to=book.assigned_to
         )
 
         new_books.append(new_book)
@@ -40,22 +38,21 @@ def add_book(books:list[schemas.Books], db:Session = Depends(get_db)):#since you
 
 @router.get("/books")
 def show_books(db:Session=Depends(get_db)):
-    books = db.query(models.Books).all()
+    books = db.query(models.Book).all()
     return books
 
 
 @router.get("/available")
 def show_filter_book(db:Session=Depends(get_db)):
-    books=db.query(models.Books).filter(
-        models.Books.is_available=="Yes"
+    books=db.query(models.Book).filter(
+        models.Book.is_available=="True"
     ).all()
-
     return books
 
 @router.patch("/update_book/{book_id}")
 def update_book(book_id:int,book_updates:schemas.BookUpdate,db:Session=Depends(get_db)):
-    book = db.query(models.Books).filter(
-        models.Books.book_id == book_id
+    book = db.query(models.Book).filter(
+        models.Book.book_id == book_id
     ).first()
 
     if not book:
@@ -74,8 +71,8 @@ def update_book(book_id:int,book_updates:schemas.BookUpdate,db:Session=Depends(g
 
 @router.delete("/delete_book/{book_id}")
 def delete_book(book_id:int,db : Session=Depends(get_db)):
-    book = db.query(models.Books).filter(
-        models.Books.book_id == book_id
+    book = db.query(models.Book).filter(
+        models.Book.book_id == book_id
     ).first()
 
     if not book:

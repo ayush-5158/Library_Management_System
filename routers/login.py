@@ -29,7 +29,7 @@ def login(form_data:OAuth2PasswordRequestForm= Depends(),db:Session=Depends(get_
 
     token = create_access_token({
         "student_id" : user.student_id,
-        "grade" : user.grade
+        "role" : user.role
     })
 
     return {
@@ -42,5 +42,5 @@ def login(form_data:OAuth2PasswordRequestForm= Depends(),db:Session=Depends(get_
 def profile(current_user : models.Student = Depends(get_current_user),db:Session=Depends(get_db)):
 
     return{
-        "message":f"Hello {current_user.name}"
+        "message":f"Hello {current_user.name} and you have issued {len(current_user.issued_books)} book"
     }
